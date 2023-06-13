@@ -17,16 +17,22 @@ for link in links:
     movie_url = link['href']
     full_url = urljoin(url, movie_url)
 
-    # Get the movie file URL
+    # Get the movie file URLs
     response_full = requests.get(full_url)
     soup_full = BeautifulSoup(response_full.text, 'html.parser')
     file_links = soup_full.select('.fb-n a')
 
+    movie_file_url = None
+    movie_image_url = None
+
     for file_link in file_links:
         file_name = file_link.text.strip()
-        if file_name.endswith('.mkv'):
+        if file_name.endswith('.mkv') or file_name.endswith('.mp4') or file_name.endswith('.rar'):
             movie_file_url = urljoin(url, file_link['href'])
-            print(f"Movie: {movie_name}")
-            print(f"Movie File: {file_name}")
-            print(f"Movie File URL: {movie_file_url}")
-            break
+        if file_name.endswith('.jpg'):
+            movie_image_url = urljoin(url, file_link['href'])
+
+    print(f"Movie: {movie_name}")
+    print(f"Movie File URL: {movie_file_url}")
+    print(f"Movie Image URL: {movie_image_url}")
+    print("----")
