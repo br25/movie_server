@@ -2,11 +2,11 @@ from bs4 import BeautifulSoup
 import requests
 from urllib.parse import urljoin
 
-class MovieScraper:
+class MovieAndOtherfileScraper:
     def __init__(self, base_url):
         self.base_url = base_url
 
-    def scrape_movies(self, movie_category):
+    def scrape_files(self, category):
         # Create the URL based on the selected movie category
         category_mapping = {
             "3d movies": "SAM-FTP-2/3D Movies",
@@ -15,7 +15,7 @@ class MovieScraper:
             "imdb top-250 movies": "SAM-FTP-2/IMDb Top-250 Movies",
             "tutorial": "SAM-FTP-2/Tutorial"
         }
-        category = category_mapping.get(movie_category.lower())
+        category = category_mapping.get(category.lower())
         if category is None:
             print("Invalid movie category.")
             return
@@ -27,15 +27,15 @@ class MovieScraper:
             soup = self._fetch_page(url)
 
             # Find all links with the specified years
-            year_links = soup.select('a[href*="/SAM-FTP-2/English%20Movies/"]')
-            for link in year_links:
+            links = soup.select('.fb-n a')
+            for link in links:
                 year_url = urljoin(url, link['href'])
-                if "Parent Directory" not in link.text:
-                    eng_movie_url = year_url
-            self._scrape_movies(eng_movie_url)
+                if year_url != self.base_url:
+                    url = year_url
+                    self._scrape_page_files(url)
         else:
             url = urljoin(self.base_url, category)
-            self._scrape_movies(url)
+            self._scrape_page_files(url)
 
     def _fetch_page(self, url):
         # Fetch the web page
@@ -46,44 +46,49 @@ class MovieScraper:
         soup = BeautifulSoup(html_content, 'html.parser')
         return soup
 
-    def _scrape_movies(self, url):
+    def _scrape_page_files(self, url):
         # Fetch and parse the web page
         soup = self._fetch_page(url)
 
         # Extract the links
         links = soup.select('.fb-n a')
         for link in links:
-            movie_name = link.text.strip()
-            movie_url = link['href']
-            full_url = urljoin(url, movie_url)
+            movie_or_file_name = link.text.strip()
+            file_url = link['href']
+            full_page_url = urljoin(self.base_url, file_url)
 
-            # Get the movie file URLs
-            response_full = requests.get(full_url)
-            soup_full = BeautifulSoup(response_full.text, 'html.parser')
-            file_links = soup_full.select('.fb-n a')
+            if movie_or_file_name == "Parent Directory":
+                continue
 
-            movie_file_url = None
-            movie_image_url = None
+            # Fetch and parse the web page
+            soup = self._fetch_page(full_page_url)
+            file_links = soup.select('.fb-n a')
+
+            file_url = None
+            image_url = None
 
             for file_link in file_links:
                 file_name = file_link.text.strip()
                 if file_name.endswith(('.mkv', '.mp4', '.rar', '.AVI', '.avi')):
-                    movie_file_url = urljoin(url, file_link['href'])
+                    file_url = urljoin(url, file_link['href'])
                 if file_name.endswith('.jpg'):
-                    movie_image_url = urljoin(url, file_link['href'])
+                    image_url = urljoin(url, file_link['href'])
 
-            print(f"Movie: {movie_name}")
-            print(f"Movie File URL: {movie_file_url}")
-            print(f"Movie Image URL: {movie_image_url}")
+            print(f"File Name: {movie_or_file_name}")
+            print(f"File URL: {file_url}")
+            print(f"Image URL: {image_url}")
             print("----")
 
 
-# Prompt user for movie category selection
-movie_category = input("Enter the movie category (3D Movies, English Movies, Foreign Movies, IMDb Top-250 Movies, Tutorial): ")
+# Prompt user for category selection
+print("-----------------Only Admin Do it-------------------")
+print("Do not missed spelling bellows format data")
+print("3D Movies, English Movies, Foreign Movies, IMDb Top-250 Movies, Tutorial")
+category = input("Enter the movie or other category (3D Movies, English Movies, Foreign Movies, IMDb Top-250 Movies, Tutorial): ")
 
-# Create an instance of the MovieScraper class
+# Create an instance of the MovieAndOtherfileScraper class
 base_url = "http://172.16.50.7/"
-scraper = MovieScraper(base_url)
+scraper = MovieAndOtherfileScraper(base_url)
 
-# Scrape movies based on the selected category
-scraper.scrape_movies(movie_category)
+# Scrape files based on the selected category
+scraper.scrape_files(category)
