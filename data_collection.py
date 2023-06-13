@@ -2,37 +2,35 @@ from bs4 import BeautifulSoup
 import requests
 from urllib.parse import urljoin
 
-# Fetch the web page
-url = "http://172.16.50.7/SAM-FTP-2/3D Movies"
-response = requests.get(url)
-html_content = response.text
+# Prompt user for movie category selection
+movie_category = input("Enter the movie category (3D Movies, English Movies, Foreign Movies, IMDb Top-250 Movies, Tutorial): ")
 
-# Parse the HTML
-soup = BeautifulSoup(html_content, 'html.parser')
+# Create the URL based on the selected movie category
+base_url = "http://172.16.50.7/"
+category_mapping = {
+    "3d movies": "SAM-FTP-2/3D Movies",
+    "english movies": "SAM-FTP-2/English Movies",
+    "foreign movies": "SAM-FTP-2/Foreign Language Movies",
+    "imdb top-250 movies": "SAM-FTP-2/IMDb Top-250 Movies",
+    "tutorial": "SAM-FTP-2/Tutorial"
+}
+category = category_mapping.get(movie_category.lower())
+if category is None:
+    print("Invalid movie category.")
+    exit()
 
-# Extract the links for the 3D movies
-links = soup.select('.fb-n a')
-for link in links:
-    movie_name = link.text.strip()
-    movie_url = link['href']
-    full_url = urljoin(url, movie_url)
+if category == "SAM-FTP-2/English Movies":
+    url = urljoin(base_url, category)
+    # Fetch the web page
+    response = requests.get(url)
+    html_content = response.text
 
-    # Get the movie file URLs
-    response_full = requests.get(full_url)
-    soup_full = BeautifulSoup(response_full.text, 'html.parser')
-    file_links = soup_full.select('.fb-n a')
+    # Parse the HTML
+    soup = BeautifulSoup(html_content, 'html.parser')
 
-    movie_file_url = None
-    movie_image_url = None
-
-    for file_link in file_links:
-        file_name = file_link.text.strip()
-        if file_name.endswith('.mkv') or file_name.endswith('.mp4') or file_name.endswith('.rar'):
-            movie_file_url = urljoin(url, file_link['href'])
-        if file_name.endswith('.jpg'):
-            movie_image_url = urljoin(url, file_link['href'])
-
-    print(f"Movie: {movie_name}")
-    print(f"Movie File URL: {movie_file_url}")
-    print(f"Movie Image URL: {movie_image_url}")
-    print("----")
+    # Find all links with the specified years
+    year_links = soup.select('a[href*="/SAM-FTP-2/English%20Movies/"]')
+    for link in year_links:
+        year_url = urljoin(url, link['href'])
+        if "Parent Directory" not in link.text:
+            print(year_url)
