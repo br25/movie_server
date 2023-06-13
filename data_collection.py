@@ -6,18 +6,35 @@ class MovieAndOtherfileScraper:
     def __init__(self, base_url):
         self.base_url = base_url
 
-    def scrape_files(self, category):
+    def prompt_category_selection(self):
+        print("----------------- Only Admin Can Do It -------------------")
+        print("Please select a movie or category from the following options:")
+        print("1. 3D Movies")
+        print("2. English Movies")
+        print("3. Foreign Movies")
+        print("4. IMDb Top-250 Movies")
+        print("5. Tutorial")
+
+        category_num = input("Enter the number corresponding to your desired category: ")
+        self.scrape_files(category_num)
+
+    def scrape_files(self, category_num):
+        # Map category number to category name
         category_mapping = {
-            "3d movies": "SAM-FTP-2/3D Movies",
-            "english movies": "SAM-FTP-2/English Movies",
-            "foreign movies": "SAM-FTP-2/Foreign Language Movies",
-            "imdb top-250 movies": "SAM-FTP-2/IMDb Top-250 Movies",
-            "tutorial": "SAM-FTP-2/Tutorial"
+            "1": "SAM-FTP-2/3D Movies",
+            "2": "SAM-FTP-2/English Movies",
+            "3": "SAM-FTP-2/Foreign Movies",
+            "4": "SAM-FTP-2/IMDb Top-250 Movies",
+            "5": "SAM-FTP-2/Tutorial"
         }
-        category = category_mapping.get(category.lower())
+
+        # Validate and retrieve the category name
+        category = category_mapping.get(category_num)
         if category is None:
-            print("Invalid movie category.")
+            print("Invalid category number. Please try again.")
             return
+
+        print(f"You have selected: {category}")
 
         if category == "SAM-FTP-2/English Movies":
             url = urljoin(self.base_url, category)
@@ -73,15 +90,9 @@ class MovieAndOtherfileScraper:
             print("----")
 
 
-# Prompt user for category selection
-print("-----------------Only Admin Do it-------------------")
-print("Do not misspell the following category names:")
-print("3D Movies, English Movies, Foreign Movies, IMDb Top-250 Movies, Tutorial")
-category = input("Enter the movie or other category (3D Movies, English Movies, Foreign Movies, IMDb Top-250 Movies, Tutorial): ")
-
 # Create an instance of the MovieAndOtherfileScraper class
 base_url = "http://172.16.50.7/"
 scraper = MovieAndOtherfileScraper(base_url)
 
-# Scrape files based on the selected category
-scraper.scrape_files(category)
+# Prompt user for category selection and scrape files
+scraper.prompt_category_selection()
