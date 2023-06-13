@@ -22,67 +22,33 @@ class MovieScraper:
 
         if category == "SAM-FTP-2/English Movies":
             url = urljoin(self.base_url, category)
-            self._scrape_english_movies(url)
+
+            # Fetch and parse the web page
+            soup = self._fetch_page(url)
+
+            # Find all links with the specified years
+            year_links = soup.select('a[href*="/SAM-FTP-2/English%20Movies/"]')
+            for link in year_links:
+                year_url = urljoin(url, link['href'])
+                if "Parent Directory" not in link.text:
+                    eng_movie_url = year_url
+            self._scrape_movies(eng_movie_url)
         else:
             url = urljoin(self.base_url, category)
-            self._scrape_other_movies(url)
+            self._scrape_movies(url)
 
-    def _scrape_english_movies(self, url):
+    def _fetch_page(self, url):
         # Fetch the web page
         response = requests.get(url)
         html_content = response.text
 
         # Parse the HTML
         soup = BeautifulSoup(html_content, 'html.parser')
+        return soup
 
-        # Find all links with the specified years
-        year_links = soup.select('a[href*="/SAM-FTP-2/English%20Movies/"]')
-        for link in year_links:
-            year_url = urljoin(url, link['href'])
-            if "Parent Directory" not in link.text:
-                eng_url = year_url
-
-                # Connect eng_url to url
-                response_eng = requests.get(eng_url)
-                html_content_eng = response_eng.text
-
-                # Parse the English Movies page
-                soup_eng = BeautifulSoup(html_content_eng, 'html.parser')
-
-                # Extract the links
-                links = soup_eng.select('.fb-n a')
-                for link in links:
-                    movie_name = link.text.strip()
-                    movie_url = link['href']
-                    full_url = urljoin(url, movie_url)
-
-                    # Get the movie file URLs
-                    response_full = requests.get(full_url)
-                    soup_full = BeautifulSoup(response_full.text, 'html.parser')
-                    file_links = soup_full.select('.fb-n a')
-
-                    movie_file_url = None
-                    movie_image_url = None
-
-                    for file_link in file_links:
-                        file_name = file_link.text.strip()
-                        if file_name.endswith('.mkv') or file_name.endswith('.mp4') or file_name.endswith('.rar') or file_name.endswith('.AVI') or file_name.endswith('.avi'):
-                            movie_file_url = urljoin(url, file_link['href'])
-                        if file_name.endswith('.jpg'):
-                            movie_image_url = urljoin(url, file_link['href'])
-
-                    print(f"Movie: {movie_name}")
-                    print(f"Movie File URL: {movie_file_url}")
-                    print(f"Movie Image URL: {movie_image_url}")
-                    print("----")
-
-    def _scrape_other_movies(self, url):
-        # Fetch the web page
-        response = requests.get(url)
-        html_content = response.text
-
-        # Parse the HTML
-        soup = BeautifulSoup(html_content, 'html.parser')
+    def _scrape_movies(self, url):
+        # Fetch and parse the web page
+        soup = self._fetch_page(url)
 
         # Extract the links
         links = soup.select('.fb-n a')
@@ -101,7 +67,7 @@ class MovieScraper:
 
             for file_link in file_links:
                 file_name = file_link.text.strip()
-                if file_name.endswith('.mkv') or file_name.endswith('.mp4') or file_name.endswith('.rar') or file_name.endswith('.AVI') or file_name.endswith('.avi'):
+                if file_name.endswith(('.mkv', '.mp4', '.rar', '.AVI', '.avi')):
                     movie_file_url = urljoin(url, file_link['href'])
                 if file_name.endswith('.jpg'):
                     movie_image_url = urljoin(url, file_link['href'])
