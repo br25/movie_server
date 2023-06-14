@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div>
+        <h1>Movie Details</h1>
+        <div class="movie-detail">
+            <img src="{{ movie.image_url }}" alt="{{ movie.name }}" style="max-height: 250px; max-width: 200px;">
+            <h2>{{ movie.name }}</h2>
+            <p>Category: {{ movie.category }}</p>
+            <p>Rating: {{ movie.rating }}</p>
+            <h3>Reviews:</h3>
+            <ul>
+                {% for review in movie.reviews.all %}
+                <li>{{ review.comment }} - {{ review.created_at }}</li>
+                {% empty %}
+                <li>No reviews available</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

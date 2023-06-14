@@ -1,0 +1,109 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #3d3c38;
+    color: #ccc;
+}
+
+h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+input[type="text"],
+input[type="number"] {
+    padding: 5px;
+    margin-right: 10px;
+}
+
+button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.movie-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-gap: 20px;
+    align-items: center;
+}
+
+.movie {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+    background-color: #575652;
+}
+
+.movie img {
+    max-height: 250px;
+    max-width: 200px;
+    margin-bottom: 10px;
+}
+
+.movie h2 {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.movie p {
+    margin-bottom: 5px;
+}
+
+.movie a {
+    color: #007bff;
+}
+
+p.no-movies {
+    font-style: italic;
+}
+
+.movie-detail {
+    text-align: center;
+}
+
+.movie-detail img {
+    max-height: 250px;
+    max-width: 200px;
+    margin-bottom: 10px;
+}
+
+.movie-detail h2 {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.movie-detail p {
+    margin-bottom: 5px;
+}
+
+.movie-detail h3 {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.movie-detail ul {
+    padding-left: 0;
+}
+
+.movie-detail li {
+    list-style: none;
+    margin-bottom: 5px;
+}
