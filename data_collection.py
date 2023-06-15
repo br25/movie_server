@@ -5,6 +5,10 @@ from urllib.parse import urljoin
 class MovieAndOtherfileScraper:
     def __init__(self, base_url):
         self.base_url = base_url
+        self.sql_file = open("data.sql", "w")  # Open the SQL file in write mode
+
+    def __del__(self):
+        self.sql_file.close()  # Close the SQL file when the instance is destroyed
 
     def prompt_category_selection(self):
         print("----------------- Only Admin Can Do It -------------------")
@@ -59,6 +63,10 @@ class MovieAndOtherfileScraper:
         soup = BeautifulSoup(html_content, 'html.parser')
         return soup
 
+    def _insert_file_data(self, file_id, file_name, file_url, image_url):
+        sql_statement = f"INSERT INTO movie_app_FileData (id, file_name, file_url, image_url, average_rating) VALUES ({file_id}, '{file_name}', '{file_url}', '{image_url}', 0);\n"
+        self.sql_file.write(sql_statement)  # Write the SQL statement to the file
+
     def _scrape_page_files(self, url, session):
         soup = self._fetch_page(url, session)
         links = soup.select('.fb-n a')
@@ -84,6 +92,13 @@ class MovieAndOtherfileScraper:
                 if file_name.endswith('.jpg'):
                     image_url = urljoin(url, file_link['href'])
 
+            # Generate movie ID (you may modify this logic as per your requirements)
+            file_id = hash(movie_or_file_name) % 100000
+
+            # Insert movie data into SQL file
+            self._insert_file_data(file_id, movie_or_file_name, file_url, image_url)
+
+            print(f"File id: {file_id}")
             print(f"File Name: {movie_or_file_name}")
             print(f"File URL: {file_url}")
             print(f"Image URL: {image_url}")

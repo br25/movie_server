@@ -1,18 +1,15 @@
-html,
+/* styles.css */
+
+/* Global Styles */
 body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
+    font-family: Arial, sans-serif;
+    line-height: 1.5;
 }
 
 .container {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: #3d3c38;
-    color: #ccc;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
 h1 {
@@ -20,90 +17,67 @@ h1 {
     margin-bottom: 20px;
 }
 
-form {
+h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+h4 {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+p {
+    margin-bottom: 10px;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+li {
     margin-bottom: 20px;
 }
 
-input[type="text"],
-input[type="number"] {
-    padding: 5px;
-    margin-right: 10px;
-}
-
-button {
-    padding: 5px 10px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-}
-
-.movie-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    grid-gap: 20px;
-    align-items: center;
-}
-
-.movie {
+/* Specific Styles */
+.container ul li {
     border: 1px solid #ccc;
     padding: 10px;
-    text-align: center;
-    background-color: #575652;
+    background-color: #f9f9f9;
 }
 
-.movie img {
-    max-height: 250px;
-    max-width: 200px;
+.container ul li:hover {
+    background-color: #e9e9e9;
+}
+
+.container ul li h3 {
+    color: #333;
+}
+
+.container ul li p {
+    color: #666;
+}
+
+.container ul li h4 {
+    color: #888;
+}
+
+.container ul li ul li {
+    border: none;
+    background-color: transparent;
+    padding: 0;
     margin-bottom: 10px;
 }
 
-.movie h2 {
-    font-size: 18px;
-    margin-bottom: 5px;
+.container ul li ul li p {
+    color: #555;
 }
 
-.movie p {
-    margin-bottom: 5px;
-}
-
-.movie a {
-    color: #007bff;
-}
-
-p.no-movies {
-    font-style: italic;
-}
-
-.movie-detail {
-    text-align: center;
-}
-
-.movie-detail img {
-    max-height: 250px;
-    max-width: 200px;
-    margin-bottom: 10px;
-}
-
-.movie-detail h2 {
-    font-size: 20px;
-    margin-bottom: 5px;
-}
-
-.movie-detail p {
-    margin-bottom: 5px;
-}
-
-.movie-detail h3 {
-    font-size: 18px;
-    margin-bottom: 5px;
-}
-
-.movie-detail ul {
-    padding-left: 0;
-}
-
-.movie-detail li {
-    list-style: none;
-    margin-bottom: 5px;
+/* Responsive Styles */
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
 }

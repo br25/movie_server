@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- file_data_list.html -->
+...
+<div class="container">
+    <div>
+        <h1>File Data List</h1>
+    </div>
+    <ul>
+        {% for data in file_data_list %}
+        <li>
+            <h3>{{ data.file_name }}</h3>
+            <p>File URL: {{ data.file_url }}</p>
+            <p>Image URL: {{ data.image_url }}</p>
+            <h4>Reviews:</h4>
+            <ul>
+                {% for review in data.reviews.all %}
+                <li>
+                    <p>User: {{ review.user }}</p>
+                    <p>Comment: {{ review.comment }}</p>
+                    <p>Rating: {{ review.rating }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+            <p>Average Rating: {{ data.average_rating }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+...
+
+{% endblock %}

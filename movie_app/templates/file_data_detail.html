@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div>
+        <h1>File Data Details</h1>
+    </div>
+    <div>
+        <h3>{{ file_data.file_name }}</h3>
+        <p>File URL: {{ file_data.file_url }}</p>
+        <p>Image URL: {{ file_data.image_url }}</p>
+        <h4>Reviews:</h4>
+        <ul>
+            {% for review in file_data.reviews.all %}
+            <li>
+                <p>User: {{ review.user }}</p>
+                <p>Comment: {{ review.comment }}</p>
+                <p>Rating: {{ review.rating }}</p>
+                {% if review.is_allow %}
+                    <p>Status: Allowed</p>
+                {% else %}
+                    <p>Status: Pending Approval</p>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+
+        <p>Average Rating: {{ file_data.average_rating }}</p>
+    </div>
+</div>
+{% endblock %}
