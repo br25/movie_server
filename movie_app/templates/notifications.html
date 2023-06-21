@@ -1,0 +1,21 @@
+<!-- notifications.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Notifications List</h1>
+<ul>
+    {% for notification in notifications %}
+    <li>{{ notification.message }}</li>
+    <h4>Update Notification</h4>
+    <form method="PUT" action="{% url 'notification-update' notification.id %}">
+        {% csrf_token %}
+        <label for="is_approved">Is Approved:</label>
+        <input type="checkbox" id="is_approved" name="is_approved" {% if notification.is_approved %}checked{% endif %}>
+        <br>
+        <input type="submit" value="Update">
+    </form>
+    {% empty %}
+    <li>No notifications available.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

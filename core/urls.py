@@ -6,7 +6,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('', include('movie_app.urls')),
+    path('api/', include('movie_app.urls')),
+    path('', include('movie_auth.urls')),
 ]
 
 # Add static and media URL mappings

@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>List of comments</h1>
+    <div class="data-list">
+        <div class="data-item">
+            <div class="img-container">
+                <img src="{{ data_details.image_url }}" alt="Image">
+            </div>
+            <h2>{{ data_details.file_name }}</h2>
+            <p>Average Rating: {{ data_details.average_rating|floatformat:1|default:"N/A" }}</p>
+            <!-- Display other file data information as needed -->
+        </div>
+        <div class="comments-container">
+            <h3>Comments:</h3>
+            <ul>
+                {% for comment in comments %}
+                    {% if comment.is_approved %}
+                        <li><span>{{ comment.user }}:</span> {{ comment.comment }}</li>
+                    {% endif %}
+                {% empty %}
+                    <li>No comments available.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div>
+        <form id="rating-form" class="rating-form" method="POST" action="{% url 'rating-create' data_details.id %}">
+            {% csrf_token %}
+            <!-- Hidden field for file_data ID -->
+            <input type="hidden" name="file_data" value="{{ data_details.id }}">
+            <!-- Rating field -->
+            <div class="form-group">
+                <label for="rating">Rating:</label>
+                <select name="rating" id="rating" class="form-control" required>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+            <!-- Submit button -->
+            <button class="submit-button" type="submit">Submit Rating</button>
+        </form>
+        <form id="comment-form" class="comment-form" method="POST" action="{% url 'comment-create' data_details.id %}">
+            {% csrf_token %}
+            <!-- Hidden field for file_data ID -->
+            <input type="hidden" name="file_data" value="{{ data_details.id }}">
+            <!-- Comment field -->
+            <div class="form-group">
+                <label for="comment">Comment:</label>
+                <textarea name="comment" id="comment" class="form-control"></textarea>
+            </div>
+            <!-- Submit button -->
+            <button class="submit-button" type="submit">Submit Comment</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .comments-container {
+        margin-top: 10px;
+        margin-left: 20px;
+    }
+
+    .comments-container h3 {
+        font-weight: bold;
+        font-size: 18px;
+        color: #23e83d;
+    }
+
+    .comments-container ul {
+        list-style-type: none;
+        padding: 0;
+        color: #fcfcfc;
+    }
+
+    .comments-container li {
+        margin-bottom: 5px;
+    }
+
+    .comments-container li span {
+        font-weight: bold;
+        color: #e8db23;
+    }
+
+    .comments-container li p {
+        margin: 0;
+    }
+
+    /* end of list of comments */
+    /* start form of create data css */
+
+    .comment-form {
+        color: blue;
+        font-size: 18px;
+        display: flex;
+        justify-content: space-between;
+        padding-right: 10px;
+    }
+
+    .rating-form {
+        color: blue;
+        font-size: 18px;
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+    }
+
+    .submit-button {
+        padding: 10px 30px;
+        background-color: #0056b3;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        border-radius: 10px;
+        font-size: 18px;
+    }
+
+    .submit-button:hover {
+        background-color: #03ac13;
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#rating-form').submit(function (e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            // Perform AJAX request to handle the form submission
+            $.ajax({
+                url: $(this).attr('action'),
+                type: $(this).attr('method'),
+                data: $(this).serialize(),
+                success: function (response) {
+                    // Handle the success response (if needed)
+                    // For example, display a success message
+                    alert('Rating submitted successfully!');
+                },
+                error: function (xhr, status, error) {
+                    // Handle the error response (if needed)
+                    // For example, display an error message
+                    alert('An error occurred while submitting the rating.');
+                }
+            });
+        });
+    });
+</script>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#comment-form').submit(function (e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            // Perform AJAX request to handle the form submission
+            $.ajax({
+                url: $(this).attr('action'),
+                type: $(this).attr('method'),
+                data: $(this).serialize(),
+                success: function (response) {
+                    // Handle the success response (if needed)
+                    // For example, display a success message
+                    alert('Comment submitted successfully!');
+                },
+                error: function (xhr, status, error) {
+                    // Handle the error response (if needed)
+                    // For example, display an error message
+                    alert('An error occurred while submitting the comment.');
+                }
+            });
+        });
+    });
+</script>
+
+
+{% endblock %}

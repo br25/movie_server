@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Login</title>
+</head>
+<body class="container">
+    <div class="login-form">
+        <h2>Login</h2>
+        <form method="POST" class="form" action="{% url 'login' %}">
+            {% csrf_token %}
+            <label for="email" class="label">Email:</label>
+            <input type="email" class="input" id="email" name="email" required>
+            <br>
+            <label for="password" class="label">Password:</label>
+            <input type="password" class="input" id="password" name="password" required>
+            <br>
+            <button type="submit" class="button">Login</button>
+        </form>
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+                {% endfor %}
+        </ul>
+        {% endif %}
+        <div class="already_register">
+            <p>Not Register yet?</p>
+            <p><a href="{% url 'register' %}" class="button">Register</a></p>
+        </div>
+        <div>
+            <p><a href="{% url 'instruction' %}" class="button">Instruction</a></p>
+        </div>
+    </div>
+</body>
+
+</html>
+
+<style>
+.container {
+    background-color: #69665e;
+}
+.login-form {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    margin-top: 100px;
+    background-color: #bfbebb;
+    color: #fff005;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+.login-form h2 {
+    text-align: center;
+    margin-bottom: 50px;
+}
+.form {
+    margin-bottom: 20px;
+    margin-right: 20px;
+}
+.label {
+    display: block;
+    margin: 10px;
+    font-weight: bold;
+    color: black;
+}
+.input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.button {
+    width: 106%;
+    margin-top: 40px;
+    padding: 10px;
+    background-color: #0056b3;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+}
+.button:hover {
+    background-color: #03ac13;
+}
+.already_register {
+    color: black;
+    display: flex;
+    justify-content: space-between;
+}
+
+.messages {
+    color: red;
+}
+</style>

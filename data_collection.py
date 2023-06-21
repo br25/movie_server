@@ -5,57 +5,103 @@ from urllib.parse import urljoin
 class MovieAndOtherfileScraper:
     def __init__(self, base_url):
         self.base_url = base_url
-        self.sql_file = open("data.sql", "w")  # Open the SQL file in write mode
+        self.sql_file = open("data.sql", "w")
+        self.category = None
+        self.year = None
+        self.current_sequence = 17627
 
     def __del__(self):
-        self.sql_file.close()  # Close the SQL file when the instance is destroyed
+        self.sql_file.close()
 
     def prompt_category_selection(self):
         print("----------------- Only Admin Can Do It -------------------")
         print("Please select a movie or category from the following options:")
-        print("1. 3D Movies")
-        print("2. English Movies")
-        print("3. Foreign Movies")
-        print("4. IMDb Top-250 Movies")
-        print("5. Tutorial")
+
+        categories = self.get_categories()  # Retrieve categories dynamically
+        for i, category in enumerate(categories, start=1):
+            print(f"{i}. {category}")
 
         category_num = input("Enter the number corresponding to your desired category: ")
         self.scrape_files(category_num)
 
-    def scrape_files(self, category_num):
-        # Map category number to category name
-        category_mapping = {
-            "1": "SAM-FTP-2/3D Movies",
-            "2": "SAM-FTP-2/English Movies",
-            "3": "SAM-FTP-2/Foreign Movies",
-            "4": "SAM-FTP-2/IMDb Top-250 Movies",
-            "5": "SAM-FTP-2/Tutorial"
-        }
+    def get_categories(self):
+        url = urljoin(self.base_url, "SAM-FTP-2/")  # Modify the URL accordingly
+        session = requests.Session()
+        soup = self._fetch_page(url, session)
+        links = soup.select('.fb-n a')
 
-        # Validate and retrieve the category name
-        category = category_mapping.get(category_num)
-        if category is None:
+        categories = []
+        for link in links:
+            category = link.text.strip()
+            if category != "Parent Directory":
+                categories.append(category)
+
+        session.close()
+        return categories
+
+    def scrape_files(self, category_num):
+        categories = self.get_categories()  # Retrieve categories dynamically
+
+        try:
+            category_index = int(category_num) - 1
+            self.category = categories[category_index]  # Assign the selected category
+        except (IndexError, ValueError):
             print("Invalid category number. Please try again.")
             return
 
-        print(f"You have selected: {category}")
+        print(f"You have selected: {self.category}")
 
-        if category == "SAM-FTP-2/English Movies":
-            url = urljoin(self.base_url, category)
-            session = requests.Session()
-            soup = self._fetch_page(url, session)
-            links = soup.select('.fb-n a')
-            for link in links:
-                year_url = urljoin(url, link['href'])
-                if year_url != self.base_url:
-                    url = year_url
-                    self._scrape_page_files(url, session)
-            session.close()
+        if self.category == "English Movies":
+            category = self.category.replace(" ", "%20")  # Replace space with %20
+            self.prompt_year_selection(category)
         else:
-            url = urljoin(self.base_url, category)
+            url = urljoin(self.base_url, f"SAM-FTP-2/{self.category}")
             session = requests.Session()
             self._scrape_page_files(url, session)
             session.close()
+
+    def prompt_year_selection(self, category):
+        years = self.get_years(category)  # Retrieve years dynamically
+
+        print(f"Please select a year from the following options for {category}:")
+        for i, year in enumerate(years, start=1):
+            print(f"{i}. {year}")
+
+        while True:
+            year_num = input("Enter the number corresponding to your desired year: ")
+            if year_num.isdigit() and int(year_num) <= len(years):
+                break
+            print("Invalid year number. Please try again.")
+
+        self.year = years[int(year_num) - 1]  # Assign the selected year
+        self.scrape_files_by_year(category, self.year)
+
+
+    def get_years(self, category):
+        url = urljoin(self.base_url, f"SAM-FTP-2/{category}")
+        session = requests.Session()
+        soup = self._fetch_page(url, session)
+        links = soup.select('.fb-n a')
+
+        years = []
+        for link in links:
+            year = link.text.strip()
+            if year != "Parent Directory":
+                years.append(year)
+
+        session.close()
+        return years
+
+    def scrape_files_by_year(self, category, year):
+        print(f"You have selected: {year}")
+
+        self.year = year  # Assign the selected year
+
+        url = urljoin(self.base_url, f"SAM-FTP-2/{category}/{year}")
+        session = requests.Session()
+        self._scrape_page_files(url, session)
+        session.close()
+
 
     def _fetch_page(self, url, session):
         response = session.get(url)
@@ -63,9 +109,20 @@ class MovieAndOtherfileScraper:
         soup = BeautifulSoup(html_content, 'html.parser')
         return soup
 
-    def _insert_file_data(self, file_id, file_name, file_url, image_url):
-        sql_statement = f"INSERT INTO movie_app_FileData (id, file_name, file_url, image_url, average_rating) VALUES ({file_id}, '{file_name}', '{file_url}', '{image_url}', 0);\n"
-        self.sql_file.write(sql_statement)  # Write the SQL statement to the file
+    def _insert_file_data(self, file_id, file_name, file_url, image_url, category, year):
+        category = category.replace(" ", "_")  # Replace spaces with underscores
+        if year is not None:
+            year = year.replace("(", "").replace(")", "")  # Remove parentheses from the year value
+        file_name = file_name.replace("'", "''") # Replace ' to ''
+        sql_statement = f"INSERT INTO movie_app_FileData (id, file_name, file_url, image_url, category, year) VALUES ({file_id}, '{file_name}', '{file_url}', '{image_url}', '{category}', '{year}');\n"
+        self.sql_file.write(sql_statement)
+
+
+    def _generate_file_id(self):
+        self.current_sequence += 1
+        file_id = str(self.current_sequence).zfill(8)  # Pad the sequence number with leading zeros if necessary
+        return file_id
+
 
     def _scrape_page_files(self, url, session):
         soup = self._fetch_page(url, session)
@@ -92,17 +149,22 @@ class MovieAndOtherfileScraper:
                 if file_name.endswith('.jpg'):
                     image_url = urljoin(url, file_link['href'])
 
-            # Generate movie ID (you may modify this logic as per your requirements)
-            file_id = hash(movie_or_file_name) % 100000
+            # Generate movie ID
+            file_id = self._generate_file_id()
+
+            # Print statements for debugging
+            print(f"Category: {self.category}")
+            print(f"Year: {self.year}")
 
             # Insert movie data into SQL file
-            self._insert_file_data(file_id, movie_or_file_name, file_url, image_url)
+            self._insert_file_data(file_id, movie_or_file_name, file_url, image_url, self.category, self.year)
 
             print(f"File id: {file_id}")
             print(f"File Name: {movie_or_file_name}")
             print(f"File URL: {file_url}")
             print(f"Image URL: {image_url}")
             print("----")
+
 
 
 # Create an instance of the MovieAndOtherfileScraper class

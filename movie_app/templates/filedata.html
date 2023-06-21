@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Data List</h1>
+    <div class="search-box">
+        <form method="GET" action="{% url 'filedata-list' %}">
+            <label for="file_name">File Name:</label>
+            <input type="text" id="file_name" name="file_name" placeholder="Enter file name">
+            <label for="category">Category:</label>
+            <select id="category" name="category">
+                <option value="">-- Select a category --</option>
+                <option value="3D_Movies">3D Movies</option>
+                <option value="English_Movies">English Movies</option>
+                <option value="Foreign_Language_Movies">Foreign Language Movies</option>
+                <option value="IMDb_Top-250_Movies">IMDb Top-250 Movies</option>
+                <option value="Tutorial">Tutorial</option>
+            </select>
+            <label for="year">Year:</label>
+            <select id="year" name="year">
+                <option value="">-- Select a year --</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+                <option value="2021">2021</option>
+                <option value="2020">2020</option>
+                <option value="2019">2019</option>
+                <option value="2018">2018</option>
+                <option value="2017">2017</option>
+                <option value="2016">2016</option>
+                <option value="2015">2015</option>
+                <option value="2014">2014</option>
+                <option value="2013">2013</option>
+                <option value="2012">2012</option>
+                <option value="2011">2011</option>
+                <option value="2010">2010</option>
+                <option value="2009">2009</option>
+                <option value="2008">2008</option>
+                <option value="2007">2007</option>
+                <option value="2006">2006</option>
+                <option value="2005">2005</option>
+                <option value="2004">2004</option>
+                <option value="2003">2003</option>
+                <option value="2002">2002</option>
+                <option value="2001">2001</option>
+                <option value="2000">2000</option>
+                <option value="1999">1999</option>
+                <option value="1998">1998</option>
+                <option value="1997">1997</option>
+                <option value="1996">1996</option>
+                <option value="1995 & Before">1995 & Before</option>
+                <option value="Bangla Dubbing Movies">Bangla Dubbing Movies</option>
+                <option value="Brazillian Movie">Brazillian Movie</option>
+                <option value="Chinese Language">Chinese Language</option>
+                <option value="Danish Language">Danish Language</option>
+                <option value="Dutch Language">Dutch Language</option>
+                <option value="French Language">French Language</option>
+                <option value="German Language">German Language</option>
+                <option value="Indonesian Language">Indonesian Language</option>
+                <option value="Iranian Language">Iranian Language</option>
+                <option value="Italian Movie">Italian Movie</option>
+                <option value="Japanese Language">Japanese Language</option>
+                <option value="Korean Language">Korean Language</option>
+                <option value="Norwegian Language">Norwegian Language</option>
+                <option value="Other Language">Other Language</option>
+                <option value="Pakistani Movie">Pakistani Movie</option>
+                <option value="Polish Language">Polish Language</option>
+                <option value="Russian Language">Russian Language</option>
+                <option value="Spanish Language">Spanish Language</option>
+                <option value="Swedish Language">Swedish Language</option>
+                <option value="Thai Language">Thai Language</option>
+                <option value="Turkish Language">Turkish Language</option>
+            </select>
+            <button type="submit">Search</button>
+        </form>
+    </div>
+    <div class="data-list">
+        {% for data in data_list %}
+        <div class="data-item">
+            <div class="img-container">
+                <img src="{{ data.image_url }}" alt="Image">
+            </div>
+            <h2>{{ data.file_name }}</h2>
+            <p>Average Rating: {{ data.average_rating|floatformat:1|default:"N/A" }}</p>
+            <a href="{{ data.file_url }}" class="button">Download Movie</a>
+            <a href="{% url 'filedata-details' data.id %}" class="button">Comment & Ratings</a>
+        </div>
+        {% empty %}
+        <p>No file data available.</p>
+        {% endfor %}
+    </div>
+    <div class="pagination">
+        {% if paginator %}
+        <span>Page {{ paginator.page }} of {{ paginator.pages }}</span>
+        <ul>
+            {% if paginator.page > 1 %}
+            <li><a href="?page=1">First</a></li>
+            <li><a href="?page={{ paginator.page|add:'-1' }}">Previous</a></li>
+            {% endif %}
+            {% for num in paginator.page_range %}
+            {% if num == paginator.page %}
+            <li><a class="active" href="?page={{ num }}">{{ num }}</a></li>
+            {% else %}
+            <li><a href="?page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+            {% endfor %}
+            {% if paginator.page < paginator.pages %} <li><a href="?page={{ paginator.page|add:'1' }}">Next</a></li>
+                <li><a href="?page={{ paginator.pages }}">Last</a></li>
+                {% endif %}
+        </ul>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

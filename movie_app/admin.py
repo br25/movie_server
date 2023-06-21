@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import FileData, Comment, Notification, Review
+from .models import FileData, Comments, Notification, Ratings
 
 admin.site.register(FileData)
-admin.site.register(Comment)
+admin.site.register(Comments)
 admin.site.register(Notification)
-admin.site.register(Review)
+admin.site.register(Ratings)

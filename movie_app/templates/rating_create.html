@@ -1,0 +1,31 @@
+<!-- rating_create.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+    <h1>Create Rating</h1>
+    <form method="POST" action="{% url 'rating-create' file_id=file_id %}">
+        {% csrf_token %}
+        <input type="hidden" name="file_data" value="{{ file_id }}">
+        <input type="hidden" name="user" value="{{ request.user.id }}">
+        <label for="rating">Rating:</label>
+        <select name="rating" id="rating">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+        <br><br>
+        <input type="submit" value="Create">
+    </form>
+</div>
+
+<script>
+    document.getElementById("rating-form").addEventListener("submit", function (event) {
+        event.preventDefault();  // Prevent the default form submission behavior
+        // Handle form submission using AJAX or perform any other custom logic
+    });
+</script>
+
+{% endblock %}

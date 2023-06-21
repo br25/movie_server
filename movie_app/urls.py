@@ -1,24 +1,24 @@
-from django.urls import path
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from .views import (
-    FileDataListAPIView,
-    FileDataDetailAPIView,
-    CommentListAPIView,
-    CommentCreateAPIView,
-    CommentDetailAPIView,
-    ReviewListAPIView,
-    ReviewDetailAPIView,
-    SeenNotificationListView,
-    NotificationUpdateAPIView,
+    FileDataList,
+    FileDataDetails,
+    CommentList,
+    CommentCreate,
+    RatingCreate,
+    NotificationList,
+    NotificationUpdate,
 )
 
 urlpatterns = [
-    path('', FileDataListAPIView.as_view(), name='filedata-list'),
-    path('<int:pk>/', FileDataDetailAPIView.as_view(), name='filedata-detail'),
-    path('comments/', CommentListAPIView.as_view(), name='comment-list'),
-    path('comments/create/', CommentCreateAPIView.as_view(), name='comment-create'),
-    path('comments/<int:pk>/', CommentDetailAPIView.as_view(), name='comment-detail'),
-    path('reviews/', ReviewListAPIView.as_view(), name='review-list'),
-    path('reviews/<int:pk>/', ReviewDetailAPIView.as_view(), name='review-detail'),
-    path('notifications/', SeenNotificationListView.as_view(), name='seen-notifications'),
-    path('notifications/<int:pk>/', NotificationUpdateAPIView.as_view(), name='notification-update'),
+    path('filedata/', FileDataList.as_view(), name='filedata-list'),
+    path('filedata/<int:pk>/', FileDataDetails.as_view(), name='filedata-details'),
+    path('comments/', CommentList.as_view(), name='comment-list'),
+    path('comment/create/<int:file_id>/', CommentCreate.as_view(), name='comment-create'),
+    path('rating/create/<int:file_id>/', RatingCreate.as_view(), name='rating-create'),
+    path('notifications/', NotificationList.as_view(), name='notification-list'),
+    path('notifications/<int:pk>/', NotificationUpdate.as_view(), name='notification-update'),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

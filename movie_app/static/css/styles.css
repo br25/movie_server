@@ -1,83 +1,192 @@
-/* styles.css */
-
-/* Global Styles */
-body {
-    font-family: Arial, sans-serif;
-    line-height: 1.5;
+/* Search Box */
+.search-box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+    padding-top: 35px;
+    background-color: #69665e;
+    color: #fcfcfc;
 }
+
+.search-box label {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.search-box input[type="text"],
+.search-box select {
+    padding: 5px;
+    width: 200px;
+    margin-right: 10px;
+}
+
+.search-box button {
+    padding: 10px 40px;
+    background-color: #0056b3;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+    font-size: 18px;
+}
+
+.search-box button:hover {
+    background-color: #03ac13;
+}
+
+/* Main Body */
 
 .container {
-    max-width: 800px;
-    margin: 0 auto;
+    width: 97vw;
     padding: 20px;
+    background-color: #bfbebb;
+    border-radius: 10px;
 }
 
-h1 {
-    font-size: 24px;
-    margin-bottom: 20px;
-}
-
-h3 {
-    font-size: 20px;
-    margin-bottom: 10px;
-}
-
-h4 {
-    font-size: 16px;
-    margin-bottom: 10px;
-}
-
-p {
-    margin-bottom: 10px;
-}
-
-ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
-
-li {
-    margin-bottom: 20px;
-}
-
-/* Specific Styles */
-.container ul li {
-    border: 1px solid #ccc;
+.data-list {
+    background-color: #69665e;
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
     padding: 10px;
-    background-color: #f9f9f9;
+    margin: 0px;
 }
 
-.container ul li:hover {
-    background-color: #e9e9e9;
+.data-item {
+    height: 500px;
+    width: 300px;
+    background-color: #fcfcfc;
+    padding: 20px;
+    margin: 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
 }
 
-.container ul li h3 {
-    color: #333;
-}
-
-.container ul li p {
-    color: #666;
-}
-
-.container ul li h4 {
-    color: #888;
-}
-
-.container ul li ul li {
-    border: none;
-    background-color: transparent;
-    padding: 0;
+.data-item h2 {
+    font-size: 24px;
+    margin: 0;
+    color: #333333;
     margin-bottom: 10px;
+    text-transform: uppercase;
+    white-space: normal;
+    overflow-wrap: break-word;
 }
 
-.container ul li ul li p {
-    color: #555;
+.data-item p {
+    font-size: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: bold;
+    color: #0056b3;
 }
 
-/* Responsive Styles */
-@media (max-width: 600px) {
+.data-item a {
+    color: #fcfcfc;
+    text-decoration: none;
+}
+
+.data-item a:hover {
+    text-decoration: underline;
+}
+
+.img-container {
+    height: 250px;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.button {
+    display: inline-block;
+    background-color: #69665e;
+    padding: 10px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-family: 'Arial', sans-serif;
+    font-size: 16px;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease-in-out;
+    text-align: center;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+
+/* pagination */
+.pagination {
+    display: flex;
+    justify-content: left;
+    margin-top: 30px;
+    color: #0056b3;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.pagination ul {
+    list-style-type: none;
+    padding: 0;
+    margin-top: -8px;
+    margin-left: 50px;
+}
+
+.pagination ul li {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.pagination ul li a {
+    display: inline-block;
+    padding: 5px 10px;
+    text-decoration: none;
+    color: #fcfcfc;
+    background-color: #0056b3;
+    border: 1px solid #ccc;
+}
+
+.pagination ul li a.active {
+    background-color: #03ac13;
+}
+
+.pagination ul li a:hover {
+    background-color: #03ac13;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
     .container {
+        width: 100%;
         padding: 10px;
+    }
+
+    .data-list {
+        justify-content: center;
+    }
+
+    .data-item {
+        width: 90%;
+        margin: 10px 0;
+    }
+
+    .pagination {
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .pagination ul {
+        margin-left: 0;
     }
 }
