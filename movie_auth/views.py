@@ -73,5 +73,6 @@ class LogoutView(generics.GenericAPIView):
         # return Response('login')
 
 class Instruction(APIView):
+    permission_classes = (permissions.AllowAny,)
     def get(self, request):
         return render(request, 'instruction.html')
