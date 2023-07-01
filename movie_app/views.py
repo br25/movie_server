@@ -1,8 +1,9 @@
 from rest_framework import generics, status
+from rest_framework.pagination import PageNumberPagination
 from django.core.paginator import Paginator
+from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.shortcuts import render
 from django.db.models import Avg
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -18,44 +19,70 @@ from .serializers import (
 )
 
 
-class FileDataList(generics.ListAPIView):
-    queryset = FileData.objects.order_by('id')
+# Pagination Class for FileDataList
+class CustomPagination(PageNumberPagination):
+    page_size = 20  # Set the number of items per page
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+
+class FileDataList(APIView):
     serializer_class = FileDataSerializer
+    pagination_class = CustomPagination
 
-    # Data Searching
     def get_queryset(self):
-        queryset = super().get_queryset()
-        file_name = self.request.query_params.get('file_name')
-        category = self.request.query_params.get('category')
-        year = self.request.query_params.get('year')
+        queryset = FileData.objects.order_by('id')
 
+        file_name = self.request.query_params.get('file_name')
         if file_name:
             queryset = queryset.filter(file_name__icontains=file_name)
+
+        category = self.request.query_params.get('category')
         if category:
             queryset = queryset.filter(category__icontains=category)
+
+        year = self.request.query_params.get('year')
         if year:
             queryset = queryset.filter(year__icontains=year)
 
         return queryset
 
-    def get(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
 
-        paginator = Paginator(queryset, 20)  # 20 items per page
-        page = request.GET.get('page')
-        paginated_queryset = paginator.get_page(page)
+    def paginate_queryset(self, queryset):
+        self.paginator = self.pagination_class()
+        page_size = self.paginator.get_page_size(self.request)
+        page_number = self.request.query_params.get('page')
+        paginated_queryset = self.paginator.paginate_queryset(queryset, self.request)
+        return paginated_queryset
+
+    def get(self, request, format=None):
+        queryset = self.get_queryset()
+        paginated_queryset = self.paginate_queryset(queryset)
 
         serializer = self.serializer_class(paginated_queryset, many=True)
         serialized_data = serializer.data
 
+        all_categories = FileData.objects.values_list('category', flat=True).distinct()
+        categories = sorted(set(all_categories))
+
+        all_years = FileData.objects.values_list('year', flat=True).distinct()
+        numeric_years = sorted(set(year for year in all_years if str(year).isdigit()))
+        string_years = sorted(set(str(year) for year in all_years if not str(year).isdigit()))
+
+
         return render(request, 'filedata.html', {
-            'data_list': serialized_data,
-            'paginator': {
-                'page': paginated_queryset.number,
-                'pages': paginator.num_pages,
-                'total': paginator.count,
-            }
+            'movie': serialized_data,
+            'categories': categories,
+            'numeric_years': numeric_years,
+            'string_years': string_years,
+            'previous_page': self.paginator.get_previous_link(),
+            'next_page': self.paginator.get_next_link(),
+            'current_page': self.paginator.page.number,
+            'total_pages': self.paginator.page.paginator.num_pages
         })
+
+
+
 
 
 class FileDataDetails(generics.RetrieveAPIView):
